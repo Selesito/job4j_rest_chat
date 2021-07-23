@@ -6,9 +6,15 @@ jdk:
 # используем режим обычного пользователя для сборки проекта.
 sudo: false
 
+# создание БД для тестов
+services:
+  - postgresql
+before_install:
+  - psql -c "CREATE DATABASE chat;" -U postgres
+
 env:
   global:
-    - CODECOV_TOKEN="b48c16ce-03d3-42c6-93bb-94406ae89cf1"
+    - CODECOV_TOKEN="6e93ace1-8123-426b-9dab-a63660690154"
 
 # после выполнения сборки запустить скрипт, который будет собирать статистику по JaCoCo
 # Здесь используется сторонни сервис https://codecov.io/
