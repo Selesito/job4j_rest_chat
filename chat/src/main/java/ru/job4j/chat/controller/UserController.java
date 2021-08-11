@@ -22,6 +22,10 @@ public class UserController {
 
     @PostMapping("/sign-up")
     public void signUp(@RequestBody Person person) {
+        if (person.getName() == null || person.getPassword() == null
+                || person.getLogin() == null) {
+            throw new NullPointerException("Username or password  or login mustn't be empty");
+        }
         person.setPassword(encoder.encode(person.getPassword()));
         users.save(person);
     }
