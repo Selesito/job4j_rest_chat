@@ -5,8 +5,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.job4j.chat.Operation;
 import ru.job4j.chat.model.Message;
 import ru.job4j.chat.model.Person;
 import ru.job4j.chat.service.PathService;
@@ -14,6 +16,7 @@ import ru.job4j.chat.service.PersonService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -48,7 +51,8 @@ public class PersonController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Person> create(@RequestBody Person person) {
+    @Validated(Operation.OnCreate.class)
+    public ResponseEntity<Person> create(@Valid @RequestBody Person person) {
         if (person.getName() == null || person.getPassword() == null
                 || person.getLogin() == null) {
             throw new NullPointerException("Username or password  or login mustn't be empty");
@@ -60,7 +64,8 @@ public class PersonController {
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Person person) {
+    @Validated(Operation.OnUpdate.class)
+    public ResponseEntity<Void> update(@Valid @RequestBody Person person) {
         if (person.getName() == null || person.getPassword() == null
                 || person.getLogin() == null) {
             throw new NullPointerException("Username or password  or login mustn't be empty");
@@ -73,7 +78,8 @@ public class PersonController {
     }
 
     @DeleteMapping("/")
-    public ResponseEntity<Void> delete(@RequestParam int id) {
+    @Validated(Operation.OnDelete.class)
+    public ResponseEntity<Void> delete(@Valid @RequestParam int id) {
         if (id == 0) {
             throw new NullPointerException("ID mustn't be empty");
         }
