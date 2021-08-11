@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.chat.model.Message;
 import ru.job4j.chat.service.MessegerService;
+import ru.job4j.chat.service.PathService;
+
+import java.lang.reflect.InvocationTargetException;
 
 @RestController
 @RequestMapping("/message")
@@ -60,5 +63,16 @@ public class MessageController {
         message.setId(id);
         this.service.delete(message);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/example")
+    public Message example(@RequestBody Message message) throws InvocationTargetException, IllegalAccessException {
+        var current = service.findById(message.getId());
+        if (current == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        var path = new PathService<Message>();
+        service.save(path.getPatch(current.get(), message));
+        return current.get();
     }
 }

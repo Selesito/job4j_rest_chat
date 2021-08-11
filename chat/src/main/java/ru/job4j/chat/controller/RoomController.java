@@ -5,9 +5,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.job4j.chat.model.Message;
 import ru.job4j.chat.model.Room;
+import ru.job4j.chat.service.PathService;
 import ru.job4j.chat.service.RoomService;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -75,5 +78,16 @@ public class RoomController {
                 .contentLength(body.length())
                 .body(body);
         return entity;
+    }
+
+    @PatchMapping("/example")
+    public Room example(@RequestBody Room room) throws InvocationTargetException, IllegalAccessException {
+        var current = service.findById(room.getId());
+        if (current == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        var path = new PathService<Room>();
+        service.save(path.getPatch(current.get(), room));
+        return current.get();
     }
 }

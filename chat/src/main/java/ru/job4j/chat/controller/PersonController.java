@@ -7,12 +7,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.job4j.chat.model.Message;
 import ru.job4j.chat.model.Person;
+import ru.job4j.chat.service.PathService;
 import ru.job4j.chat.service.PersonService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 @RestController
@@ -89,5 +92,16 @@ public class PersonController {
             put("type", e.getClass());
         }}));
         LOGGER.error(e.getLocalizedMessage());
+    }
+
+    @PatchMapping("/example")
+    public Person example(@RequestBody Person person) throws InvocationTargetException, IllegalAccessException {
+        var current = service.findById(person.getId());
+        if (current == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        var path = new PathService<Person>();
+        service.save(path.getPatch(current.get(), person));
+        return current.get();
     }
 }

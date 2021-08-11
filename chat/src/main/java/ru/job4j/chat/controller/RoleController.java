@@ -4,8 +4,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.job4j.chat.model.Message;
 import ru.job4j.chat.model.Role;
 import ru.job4j.chat.repository.RoleRepository;
+import ru.job4j.chat.service.PathService;
+
+import java.lang.reflect.InvocationTargetException;
 
 @RestController
 @RequestMapping("/role")
@@ -60,5 +64,16 @@ public class RoleController {
         role.setId(id);
         this.repository.delete(role);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/example")
+    public Role example(@RequestBody Role role) throws InvocationTargetException, IllegalAccessException {
+        var current = repository.findById(role.getId());
+        if (current == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        var path = new PathService<Role>();
+        repository.save(path.getPatch(current.get(), role));
+        return current.get();
     }
 }
